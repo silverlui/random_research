@@ -28,7 +28,7 @@ from math import sqrt
 
 
 # I've found memoizing to be super useful especially
-# since many algo inevitablly compute same arithmetic
+# since many algo inevitably compute same arithmetic
 def memoize(func):
     '''
     Desc:
@@ -58,16 +58,9 @@ def memoize(func):
 # -----------------------------------------------------------
 
 
-# Numpy random number generator to simulate large scale data
-generate = np.random.randint(10, size=100000)
-
-x = 100000
-y = 10
-
-
 # I've decided to create an random function to
-# demistify how random works and learn how to
-# desgin an algorithm.
+# demystify how random works and learn how to
+# design an algorithm.
 
 # @memoize # 'decorator' integrates into function
 def my_random(length: int, nums_in_range: int):
@@ -100,11 +93,11 @@ def my_random(length: int, nums_in_range: int):
 # sorting data beforehand
 
 start_time = time.time()
-data = np.sort(my_random(x, y))
+data = np.sort(my_random(10, 10))
 total_time = time.time() - start_time
-# print("{} seconds".format(total_time))
 
-length = data.size
+# Numpy random number generator to simulate large scale data
+generate = np.random.randint(10, size=10)
 
 
 # -----------------------------------------------------------
@@ -112,10 +105,20 @@ length = data.size
 # -----------------------------------------------------------
 
 def main():
-    print("              Welcome to my Data Analysis Project")
+    print("\t\tWelcome to my Data Analysis Project")
     print("-" * 63)
-    print(data)
-    print_summary(DataItems, 50, 10)
+    global data
+    user_choice = int(input("Numpy's Random [1]\nMy Random      [2] -->"))
+    if user_choice == 2:
+        print_summary(DataItems, 50, 10)
+        print(data)
+        bar_graph(data, 10)
+    elif user_choice == 1:
+        data = generate
+        print_summary(DataItems, 50, 10)
+        print(data)
+        bar_graph(data, 10)
+
     return print("\n[{}] seconds...".format(total_time))
 
 
@@ -133,7 +136,6 @@ def sample_s_deviation(a: list):
     Returns:
     (int) - square root of new mean
     '''
-    global samp_var
 
     # Numpy's mechanism called Broadcasting
     # allowed me to perform arithmetic to every cell
@@ -141,7 +143,7 @@ def sample_s_deviation(a: list):
     # compared to the slow python for loop. (looping occurs in c)
     new_arr = (a - np.mean(a)) ** 2
     new_mean = np.mean(new_arr)
-    samp_var = sqrt(new_mean)  # readbility
+    samp_var = sqrt(new_mean)  # readability
     return samp_var
 
 
@@ -152,7 +154,14 @@ def standard_error(a):
     Param:
     a (int) - flawed
     '''
-    return samp_var / sqrt(length)
+    new_arr = (a - np.mean(a)) ** 2
+    new_mean = np.mean(new_arr)
+    samp_var = sqrt(new_mean)
+    return samp_var / sqrt(a.size)
+
+
+# Create a recursive distribution function
+# that takes advantage of memoization
 
 
 # -----------------------------------------------------------
@@ -172,7 +181,7 @@ def print_summary(a: dict, left_width: int, right_width: int):
     left_width - (int) an integer that defines the spacing of function from left side
     right_width - (int) - an integer that defines the spacing of function from right side
     Returns:
-    (prints) - an organized dictioary
+    (prints) - an organized dictionary
     '''
     table_width = right_width + left_width
     print("Summary of Dataset".center(left_width + (right_width + 3), "_"))
@@ -181,20 +190,44 @@ def print_summary(a: dict, left_width: int, right_width: int):
         print("|" + "-" * (table_width + 1) + "|")
 
 
+# Another form of visualization via a graph function.
+# Matplotlib is a million times better but here is a
+# custom version of mine
+def bar_graph(data, detail):
+    """
+    WIP
+    """
+    bar = chr(9608)
+
+    # print the y - axis of graph
+    for y in reversed(range(detail)):
+        print(y, "|",
+              bar, bar, bar, bar, bar,
+              bar, bar, bar, bar, bar)
+
+    # print the x - axis of graph
+    print("   ", '__' * len(data))
+    for x in range(len(data)):
+        if x == 0:
+            print("   ", x, end=" ")
+        else:
+            print(x, end=" ")
+
+
 # A dictionary of all of the attributes is an easy
 # way of organizing and compressing the data that
 # scales with the table structure.
 DataItems = {
-    'Data Length': format(length, '.4f'),
-    'Mean': format(np.mean(tuple(data)), '.4f'),
-    'Sample Standard Deviation': format(sample_s_deviation(list(data)), '.4f'),
-    'Standard Error': format(standard_error(tuple(data)), '.4f'),
+    'Data Length': format(data.size, '.4f'),
+    'Mean': format(np.mean(data), '.4f'),
+    'Sample Standard Deviation': format(sample_s_deviation(data), '.4f'),
+    'Standard Error': format(standard_error(data), '.4f'),
 }
 
 # -----------------------------------------------------------
 # MISC.
 # -----------------------------------------------------------
 
-# main runs only if file is treated as a script
+# Driver Code
 if __name__ == "__main__":
     main()
