@@ -5,13 +5,6 @@
 # from a free fall experiment in Physics Lab.
 
 # Sources:
-# Luis Cabrera
-
-# This program is intended to calculate the mean of
-# given data and its standard error. The idea is derived
-# from a free fall experiment in Physics Lab.
-
-# Sources:
 # https://mathworld.wolfram.com/StandardError.html
 # https://www.mathsisfun.com/data/standard-deviation-formulas.html
 # https://numpy.org/devdocs/user/absolute_beginners.html
