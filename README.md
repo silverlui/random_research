@@ -1,4 +1,4 @@
-# random_function_research
+# random_research
 Motivation
 -----------
 This project is an exploration of how random is computed at a fundamental level. 
