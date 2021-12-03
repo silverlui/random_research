@@ -30,3 +30,13 @@ Goal
 - Perform statistical test on algorithm
   - Spectral Test
   - Some Diehard Tests
+
+
+Current
+--------
+After configuring its proper modulus increment and multiplier the distribution becomes uniform while also taking advantage of time module.
+![my_random](https://user-images.githubusercontent.com/80076244/144550253-04a80054-50a8-4436-bd0e-d5fb626f8814.png)
+
+
+
+
