@@ -15,6 +15,15 @@ Red = my_rand || Blue = numpy.randint
 
 *early version
 
+Pixel Pattern Demonstrating Non-uniformity
+![pattern plot](https://user-images.githubusercontent.com/80076244/144544373-8002abd4-d1c7-4483-9864-08af1eb1ae71.png)
+
+Numpy's random generator's pattern is unnoticable in comparison
+![numpy plot](https://user-images.githubusercontent.com/80076244/144544376-40bc50ad-fde5-4e96-96ce-99b41e375bb6.png)
+
+
+
+
 Goal
 -----------
 - Have LCG Algorithm compete with Numpy's random
