@@ -17,7 +17,7 @@ import numpy as np
 from collections import Counter
 from time import time
 from math import sqrt
-from functools import wraps
+
 
 # Code Structure:
 # ---------------
@@ -28,38 +28,12 @@ from functools import wraps
 # 5 . Misc.
 
 
-# I've found memoizing to be super useful especially
-# since many algo inevitablly compute same arithmetic
-def memoize(func):
-    '''
-    Desc:
-    Memoization is a optimization technique that remembers
-    previous computations and calls it back when in cache instead
-    of perfoming the same unnecessary computation. It is particularly
-    useful for recursive functions.
-    Params:
-    (Any) - A function that is computationally expensive
-    Returns:
-    (Any) - The result of memoized function
-    '''
-    cache = {}  # memory
- 
-    # bug: search only allows for 1 parameter
-    @wraps(func)  # allows the return of function within function
-    def search(items):
-        if items not in cache:
-            cache[items] = func(items)  # Assign new computation
-        return cache[items]  # and return
- 
-    return search
-
 # -----------------------------------------------------------
 # DATA GENERATION
 # -----------------------------------------------------------
 
 
-
-# I've decided to create an random function to 
+# I've decided to create an random function to
 # demistify how random works and learn how to
 # desgin an algorithm.
 
@@ -68,68 +42,57 @@ def my_random(length: int, nums_in_range: int):
     """
     Desc:
     The idea from my algo is derived from linear congruential algorithm
-    and use the of time as intial value; the function is able to generates 
-    itself. Assuming a perfectly random coin flip has a mean of 5 over 10 attempts. 
+    and use the of time as initial value; the function is able to generates
+    itself. Assuming a perfectly random coin flip has a mean of 5 over 10 attempts.
     My function seems to approach (5.5) this mean, although im unsure what
     kind of distribution the numbers should have.
     Params:
     length (int) - length of the list
     nums_in_range (int) - numbers that appear in list
     Returns:
-    (list) - psuedo random list
+    (list) - pseudo random list
     """
     # initialize timer
     rand = time()
-    a = time()-1
-    c = time()-2
-
+    m = 2 ** 31
+    a = 13751
+    
     rand_list = np.arange(length)
     for i in np.nditer(rand_list):
-        rand = (a * rand + c) % nums_in_range
-        rand_list[i] = rand+1
+        rand = (a * rand) % m
+        rand_list[i] = rand % nums_in_range + 1
 
     return rand_list
 
 
-
-
-# sorting data beforehand 
+# sorting data beforehand
 
 start_time = time()
-data = np.sort(my_random(1000000, 100))
+data = my_random(1000000, 100)
 total_time = time() - start_time
 
 # Numpy random number generator to simulate large scale data
-generate = np.random.randint(100, size=1000000)    
+generate = np.random.randint(100, size=1000000)
 
 
 # -----------------------------------------------------------
 # MAIN FUNCTION
-# ----------------------------------------------------------- 
+# -----------------------------------------------------------
 
 def main():
     print("\t\tWelcome to my Data Analysis Project")
     print("-" * 63)
-    global data
     print_summary(DataItems, 50, 10)
-    print("data", data)
-    
-
 
     # numpy_randint
     lists_1 = sorted(count(generate).items())
 
     x_1, y_1 = zip(*lists_1)
 
-    
-
-
     # my_random
     lists_2 = sorted(count(data).items())
 
     x_2, y_2 = zip(*lists_2)
-
-
 
     plt.subplot()
     numpy_rand = plt.plot(x_1, y_1)
@@ -138,25 +101,26 @@ def main():
     plt.xlabel("Numbers in Range")
     plt.ylabel("Frequency")
 
-    
     plt.subplot()
     my_rand = plt.plot(x_2, y_2)
     plt.setp(my_rand, color='red', linewidth=1)
     plt.show()
 
-    # user_choice = int(input("Numpy's Random [1]\nMy Random      [2] -->"))
-    # if user_choice == 2:
-    #     
-
-    # elif user_choice == 1:
-    #     data = generate
-    #     print_summary(DataItems, 50, 10)
-    #     print(data)
-
+    print(data)
     
+    # # format data to 2d array
+    # data_2 = np.reshape(data,(500, 500))
+    # data_3 = np.random.random((500, 500))
+
+    # plt.figure()
+   
+    # plt.title("My_Random Pattern Plot")
+    # plt.imshow(data_2, interpolation='nearest')
+
+    # plt.show()
+
+    print(data)
     return print("\n[{}] seconds...".format(total_time))
-    
-
 
 
 # -----------------------------------------------------------
@@ -164,50 +128,39 @@ def main():
 # -----------------------------------------------------------
 
 
-def sample_s_deviation(a : list):
-    '''
+def sample_s_deviation(a):
+    """
     Desc:
     Perform (dev)iance calculation for every element in list.
     Params:
     a - a list containing integers
     Returns:
     (int) - square root of new mean
-    '''
-
-
-    # Numpy's mechanism called Broadcasting
-    # allowed me to perform arithmetic to every cell
-    # in array resulting in a significant performance boost
-    # compared to the slow python for loop. (looping occurs in c)
+    """
     new_arr = (a - np.mean(a)) ** 2
     new_mean = np.mean(new_arr)
-    samp_var = sqrt(new_mean) #readbility
+    samp_var = sqrt(new_mean)
     return samp_var
 
 
 def standard_error(a):
-    '''
+    """
     Desc:
     Standard error formula; uses the length and samp_var global variable
     Param:
     a (int) - flawed
-    '''
+    """
     new_arr = (a - np.mean(a)) ** 2
     new_mean = np.mean(new_arr)
     samp_var = sqrt(new_mean)
     return samp_var / sqrt(a.size)
 
 
-# occurance function
-
 def count(a):
-    count = Counter()
-    for nums in a:   
-        count[nums] += 1
-    return dict(count)
-
-
-
+    counting = Counter()
+    for nums in a:
+        counting[nums] += 1
+    return dict(counting)
 
 
 # Create Diehard test functions
@@ -215,15 +168,13 @@ def count(a):
 # number generator
 
 
-
-
 # -----------------------------------------------------------
 # DATA VISUALIZATION
 # -----------------------------------------------------------
 
 
-def print_summary(a: dict, left_width : int, right_width: int):
-    ''' 
+def print_summary(a: dict, left_width: int, right_width: int):
+    """
     Desc:
     Name of Table using the center method
     with arguments passed in the last two parameters.
@@ -234,22 +185,13 @@ def print_summary(a: dict, left_width : int, right_width: int):
     left_width - (int) an integer that defines the spacing of function from left side
     right_width - (int) - an integer that defines the spacing of function from right side
     Returns:
-    (prints) - an organized dictioary 
-    '''
+    (prints) - an organized dictioary
+    """
     table_width = right_width + left_width
-    print("Summary of Dataset".center(left_width + (right_width+3), "_"))
+    print("Summary of Dataset".center(left_width + (right_width + 3), "_"))
     for i, j in a.items():
         print("|", i.ljust(left_width, " ") + str(j).rjust(right_width) + '|')
-        print("|"+ "-"*(table_width+1)+ "|")
-
-
-
-    
-
-
-
-
-
+        print("|" + "-" * (table_width + 1) + "|")
 
 
 # A dictionary of all of the attributes is an easy
