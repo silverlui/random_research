@@ -1,6 +1,6 @@
 # Luis Cabrera
 
-# This program is intended to calculate the mean of
+# This program is originally intended to calculate the mean of
 # given data and its standard error. The idea is derived
 # from a free fall experiment in Physics Lab.
 
@@ -11,41 +11,41 @@
 # https://people.duke.edu/~ccc14/sta-663-2016/15A_RandomNumbers.html
 # https://en.m.wikipedia.org/wiki/Linear_congruential_generator
 # https://apastyle.apa.org/style-grammar-guidelines/tables-figures/tables
+# https://easy.vegas/games/craps
 
 import matplotlib.pyplot as plt
 import numpy as np
+import math
 from collections import Counter
 from time import time
-from math import sqrt
-
 
 # Code Structure:
 # ---------------
-# 1 . Data Generation
+# 1 . Number Generation
 # 2 . Main Function
-# 3 . Data Analysis Functions
-# 4 . Data Visualization
+# 3 . Analysis Functions
+# i . Diehard Tests
+# 4 . Visualization
 # 5 . Misc.
 
 
 # -----------------------------------------------------------
-# DATA GENERATION
+# NUMBER GENERATION
 # -----------------------------------------------------------
 
+# TOTAL
+total = 10000
 
-# I've decided to create an random function to
-# demistify how random works and learn how to
-# desgin an algorithm.
 
-# @memoize # 'decorator' integrates into function
+# I've decided to create a random function to
+# demystify how random works and learn how to
+# design an algorithm.
+
 def my_random(length: int, nums_in_range: int):
     """
     Desc:
-    The idea from my algo is derived from linear congruential algorithm
-    and use the of time as initial value; the function is able to generates
-    itself. Assuming a perfectly random coin flip has a mean of 5 over 10 attempts.
-    My function seems to approach (5.5) this mean, although im unsure what
-    kind of distribution the numbers should have.
+    Linear congruential algorithm
+    that outputs pseudo random integers in a list format.
     Params:
     length (int) - length of the list
     nums_in_range (int) - numbers that appear in list
@@ -56,7 +56,7 @@ def my_random(length: int, nums_in_range: int):
     rand = time()
     m = 2 ** 31
     a = 13751
-    
+
     rand_list = np.arange(length)
     for i in np.nditer(rand_list):
         rand = (a * rand) % m
@@ -65,14 +65,12 @@ def my_random(length: int, nums_in_range: int):
     return rand_list
 
 
-# sorting data beforehand
-
 start_time = time()
-data = my_random(1000000, 100)
+data = my_random(total, 100)
 total_time = time() - start_time
 
 # Numpy random number generator to simulate large scale data
-generate = np.random.randint(100, size=1000000)
+generate = np.random.randint(100, size=total)
 
 
 # -----------------------------------------------------------
@@ -80,8 +78,25 @@ generate = np.random.randint(100, size=1000000)
 # -----------------------------------------------------------
 
 def main():
-    print("\t\tWelcome to my Data Analysis Project")
+    print("\t\tWelcome to my RNG Analysis Project")
     print("-" * 63)
+    print("""
+    This program is designed to analyze random number generators
+    via Diehard Test developed by George Marsaglia. In this case 
+    the generator is being tested against Craps Test.
+    """)
+
+    while True:
+        try:
+            user_input = int(input("Please enter number of test cases -> "))
+            if user_input < 200000:
+                break
+            else:
+                print("Value too high...")
+                continue
+        except ValueError:
+            print("ERROR: Incorrect input")
+
     print_summary(DataItems, 50, 10)
 
     # numpy_randint
@@ -106,25 +121,22 @@ def main():
     plt.setp(my_rand, color='red', linewidth=1)
     plt.show()
 
-    print(data)
-    
     # # format data to 2d array
     # data_2 = np.reshape(data,(500, 500))
     # data_3 = np.random.random((500, 500))
 
     # plt.figure()
-   
+
     # plt.title("My_Random Pattern Plot")
     # plt.imshow(data_2, interpolation='nearest')
 
     # plt.show()
 
-    print(data)
-    return print("\n[{}] seconds...".format(total_time))
+    return print(craps_test(total))
 
 
 # -----------------------------------------------------------
-# DATA ANALYSIS FUNCTIONS
+# ANALYSIS FUNCTIONS
 # -----------------------------------------------------------
 
 
@@ -139,7 +151,7 @@ def sample_s_deviation(a):
     """
     new_arr = (a - np.mean(a)) ** 2
     new_mean = np.mean(new_arr)
-    samp_var = sqrt(new_mean)
+    samp_var = math.sqrt(new_mean)
     return samp_var
 
 
@@ -152,8 +164,8 @@ def standard_error(a):
     """
     new_arr = (a - np.mean(a)) ** 2
     new_mean = np.mean(new_arr)
-    samp_var = sqrt(new_mean)
-    return samp_var / sqrt(a.size)
+    samp_var = math.sqrt(new_mean)
+    return samp_var / math.sqrt(a.size)
 
 
 def count(a):
@@ -163,13 +175,92 @@ def count(a):
     return dict(counting)
 
 
-# Create Diehard test functions
-# that operate on my custom random
-# number generator
+def percent_error(exp, theo):
+    """
+    Param:
+    exp (float) - experimental value
+    theo (float) - theoretical value
+    Returns:
+    (string) - formatted percentage
+    """
+    numer = math.fabs(exp - theo)
+    result = numer / math.fabs(theo)
+    return "{:.2%}".format(result)
+
+
+# Craps Test
+# ------------
+# Determines the randomness of a uniform distribution RNG.
+# Craps is game that involves dice and the goal for a RNG is to
+# simulate its win rate and frequency of wins.
+
+# Goal: K=200,000 with theoretical win rate of 244/495 -> 49.4929%
+
+def craps_test(num_of_tests):
+    """
+    Desc:
+    Simulates Craps game by using RNG to function as dice.
+    Records wins, loss and throws that determine the effective if the rng.
+    This test was picked in particular as it is applicable to all kinds of generators.
+    Params:
+    num_of_test (int) - number of test games
+    Returns:
+    stats (string) - formatted attributes of test
+    """
+
+    wins = 0
+    loss = 0
+    throws = 0
+
+    for games in range(num_of_tests):
+
+        dices = np.random.randint(6, size=2) + 1
+        # dices = my_random(2, 6)
+        # Doesn't work because it's initialized by time.
+        roll = np.sum(dices)
+
+        if roll == 7 or roll == 11:
+            # print("You Win!" , dices, roll)
+            wins += 1
+            throws += 1
+        elif roll == 2 or roll == 3 or roll == 12:
+            # print("You Lose!", dices, roll)
+            loss += 1
+            throws += 1
+        else:
+            while True:
+
+                roll_again = np.random.randint(6, size=2) + 1
+                # roll_again = my_random(2, 6)
+                re_roll = np.sum(roll_again)
+
+                if re_roll == roll:
+                    # print("You Won a Re roll!", roll_again, re_roll)
+                    wins += 1
+                    throws += 1
+                    break
+                elif re_roll == 7:
+                    # print("You Lost a Re roll!", roll_again, rer_oll)
+                    loss += 1
+                    throws += 1
+                    break
+                else:
+                    throws += 1
+                    continue
+
+    theo = 244 / 495
+    win = wins / num_of_tests
+    win_rate = "{:.4%}".format(wins / num_of_tests)
+    stats = f""" NUMPY'S RESULTS ->
+    Wins: {wins} Losses: {loss} Throws: {throws} Games: {num_of_tests} 
+    \nWIN RATE: {win_rate}
+    \nPercent Error:  {percent_error(win, theo)}"""
+
+    return stats
 
 
 # -----------------------------------------------------------
-# DATA VISUALIZATION
+# VISUALIZATION
 # -----------------------------------------------------------
 
 
@@ -185,18 +276,17 @@ def print_summary(a: dict, left_width: int, right_width: int):
     left_width - (int) an integer that defines the spacing of function from left side
     right_width - (int) - an integer that defines the spacing of function from right side
     Returns:
-    (prints) - an organized dictioary
+    (prints) - an organized dictionary
     """
     table_width = right_width + left_width
-    print("Summary of Dataset".center(left_width + (right_width + 3), "_"))
+    print("Summary of my_random".center(left_width + (right_width + 3), "_"))
     for i, j in a.items():
         print("|", i.ljust(left_width, " ") + str(j).rjust(right_width) + '|')
         print("|" + "-" * (table_width + 1) + "|")
 
 
-# A dictionary of all of the attributes is an easy
-# way of organizing and compressing the data that
-# scales with the table structure.
+# Some attributes of each test case are stored under
+# DataItems dictionary
 DataItems = {
     'Data Length': format(data.size, '.4f'),
     'Mean': format(np.mean(data), '.4f'),
@@ -211,3 +301,4 @@ DataItems = {
 # Driver Code
 if __name__ == "__main__":
     main()
+    print("\n[{}] seconds...".format(total_time))
